@@ -1,0 +1,330 @@
+version: "3.9"
+
+services:
+  # Infrastructure Layer - Start First
+  config-server:
+    build: ./services/config-server
+    container_name: config-server
+    hostname: config-server
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10  # Increased retries
+      start_period: 30s  # Increased start period
+    networks:
+      - airops-net
+
+  discovery-service:
+    build: ./services/discovery
+    container_name: discovery-service
+    hostname: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy  # Wait for health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - airops-net
+
+  # Database Layer
+  auth-db:
+    image: postgres:16
+    container_name: auth-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=auth_db
+      - POSTGRES_USER=${DB_USERNAME:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10  # Increased retries
+      start_period: 20s
+    networks:
+      - airops-net
+
+  staff-db:
+    image: postgres:16
+    container_name: staff-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=airops_staff
+      - POSTGRES_USER=${DB_USERNAME:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - staff-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    networks:
+      - airops-net
+
+  flight-db:
+    image: postgres:16
+    container_name: flight-db
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=airops_flights
+      - POSTGRES_USER=${DB_USERNAME:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - flight-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    networks:
+      - airops-net
+
+  chat-mongo:
+    image: mongo:7.0
+    container_name: chat-mongo
+    hostname: chat-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-admin123}
+      - MONGO_INITDB_DATABASE=airops_chat
+    volumes:
+      - chat-mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s  # MongoDB takes longer to start
+    networks:
+      - airops-net
+
+  # Business Services Layer - Start After Infrastructure
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth-service
+    hostname: auth-service
+    ports:
+      - "8090:8090"
+    environment:
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - EUREKA_SERVER=http://discovery-service:8761
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health"]
+      interval: 15s  # Increased interval for business services
+      timeout: 10s   # Increased timeout
+      retries: 5
+      start_period: 60s  # Increased start period
+    networks:
+      - airops-net
+    restart: unless-stopped  # Added restart policy
+
+  flight-service:
+    build: ./services/flight-service
+    container_name: flight-service
+    hostname: flight-service
+    ports:
+      - "8084:8084"
+    environment:
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - EUREKA_SERVER=http://discovery-service:8761
+      - AUTH_SERVICE_URL=http://auth-service:8090
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      flight-db:
+        condition: service_healthy
+      auth-service:  # Wait for auth service
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - airops-net
+    restart: unless-stopped
+
+  staff-service:
+    build: ./services/staff-service
+    container_name: staff-service
+    hostname: staff-service
+    ports:
+      - "8083:8083"
+    environment:
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - EUREKA_SERVER=http://discovery-service:8761
+      - AUTH_SERVICE_URL=http://auth-service:8090
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      staff-db:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - airops-net
+    restart: unless-stopped
+
+  # Dependent Services Layer
+  chat-service:
+    build: ./services/chat-service
+    container_name: chat-service
+    hostname: chat-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_SERVER=http://discovery-service:8761
+      - AUTH_SERVICE_URL=http://auth-service:8090
+      - MONGO_USERNAME=${MONGO_USERNAME:-admin}
+      - MONGO_PASSWORD=${MONGO_PASSWORD:-admin123}
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      chat-mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - airops-net
+    restart: unless-stopped
+
+  reporting-service:
+    build: ./services/reporting-service
+    container_name: reporting-service
+    hostname: reporting-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_SERVER=http://discovery-service:8761
+      - AUTH_SERVICE_URL=http://auth-service:8090
+      - FLIGHT_SERVICE_URL=http://flight-service:8084
+      - STAFF_SERVICE_URL=http://staff-service:8083
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      flight-service:
+        condition: service_started
+      staff-service:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - airops-net
+    restart: unless-stopped
+
+  # Gateway Layer - Start Last
+  gateway:
+    build: ./services/gateway
+    container_name: gateway
+    hostname: gateway
+    ports:
+      - "8222:8222"
+    environment:
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      flight-service:
+        condition: service_started
+      staff-service:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8222/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 90s  # Gateway needs more time
+    networks:
+      - airops-net
+    restart: unless-stopped
+
+  # Frontend - Start After Gateway
+  frontend:
+    build: ./airops-frontend
+    container_name: airops-frontend
+    hostname: airops-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      gateway:
+        condition: service_started
+    networks:
+      - airops-net
+    restart: unless-stopped
+
+volumes:
+  auth-data:
+  staff-data:
+  flight-data:
+  chat-mongo-data:
+
+networks:
+  airops-net:
+    driver: bridge
