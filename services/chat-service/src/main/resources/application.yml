@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: chat-service
+  config:
+    import: "optional:configserver:http://config-server:8888"  # FIXED: Added quotes
+  cloud:
+    config:
+      uri: http://config-server:8888
+      fail-fast: false
+      retry:
+        initial-interval: 2000
+        max-attempts: 6
+
+# Add Eureka registration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Add management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
