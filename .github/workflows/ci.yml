@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - feature/**
+      - fix/**
+      - chore/**
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend-build:
+    name: Backend build (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - auth-service
+          - flight-service
+          - staff-service
+          - chat-service
+          - reporting-service
+          - discovery
+          - gateway
+          - config-server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Temurin JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      - name: Build service
+        working-directory: services/${{ matrix.service }}
+        run: mvn -B -q -DskipTests package
+
+  frontend-build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('airops-frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: airops-frontend
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Build
+        working-directory: airops-frontend
+        run: npm run build
+
+      - name: Upload Next.js build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-next-build
+          path: |
+            airops-frontend/.next/**
+            airops-frontend/public/**
+          if-no-files-found: warn
+
+  docker-build:
+    name: Docker build (${{ matrix.id }})
+    runs-on: ubuntu-latest
+    needs: [backend-build, frontend-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: auth-service
+            context: services/auth-service
+            dockerfile: services/auth-service/Dockerfile
+          - id: flight-service
+            context: services/flight-service
+            dockerfile: services/flight-service/Dockerfile
+          - id: staff-service
+            context: services/staff-service
+            dockerfile: services/staff-service/Dockerfile
+          - id: chat-service
+            context: services/chat-service
+            dockerfile: services/chat-service/Dockerfile
+          - id: reporting-service
+            context: services/reporting-service
+            dockerfile: services/reporting-service/Dockerfile
+          - id: discovery
+            context: services/discovery
+            dockerfile: services/discovery/Dockerfile
+          - id: gateway
+            context: services/gateway
+            dockerfile: services/gateway/Dockerfile
+          - id: config-server
+            context: services/config-server
+            dockerfile: services/config-server/Dockerfile
+          - id: frontend
+            context: airops-frontend
+            dockerfile: airops-frontend/Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+
