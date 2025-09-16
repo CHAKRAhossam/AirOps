@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirOps Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .chat-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .message.sent {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            margin-right: 0;
+            text-align: right;
+        }
+        .message.received {
+            background: #e9ecef;
+            color: #333;
+            margin-left: 0;
+            margin-right: auto;
+            text-align: left;
+        }
+        .message.system {
+            background: #ffc107;
+            color: #333;
+            text-align: center;
+            margin: 10px auto;
+            max-width: 50%;
+        }
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .chat-input button:hover {
+            background: #0056b3;
+        }
+        .auth-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        .auth-section input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .user-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #d4edda;
+            border-radius: 5px;
+            display: none;
+        }
+        .status {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.authenticating {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>AirOps Chat Service</h1>
+            <p>Real-time WebSocket Chat with Authentication</p>
+        </div>
+        
+        <div id="status" class="status disconnected">
+            Please login to start chatting
+        </div>
+        
+        <div id="error" class="error"></div>
+        
+        <div class="auth-section" id="authSection">
+            <h3>Login to Chat</h3>
+            <input type="text" id="email" placeholder="Enter your email" value="test20@airops.com">
+            <input type="password" id="password" placeholder="Enter your password" value="test123">
+            <button onclick="login()">Login</button>
+        </div>
+        
+        <div class="user-info" id="userInfo">
+            <h3>Welcome, <span id="userDisplayName"></span>!</h3>
+            <p>Role: <span id="userRole"></span></p>
+            <button onclick="connect()">Connect to Chat</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="chat-messages" id="messages"></div>
+        
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let stompClient = null;
+        let username = '';
+        let userId = '';
+        let userRole = '';
+        let jwtToken = '';
+        let isConnected = false;
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email.trim() || !password.trim()) {
+                showError('Please enter both email and password');
+                return;
+            }
+            
+            document.getElementById('status').className = 'status authenticating';
+            document.getElementById('status').textContent = 'Authenticating...';
+            
+            try {
+                const response = await fetch('http://localhost:8090/api/v1/auth/authenticate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    jwtToken = data.token;
+                    
+                    // Decode JWT to get user info (simple base64 decode)
+                    const payload = JSON.parse(atob(jwtToken.split('.')[1]));
+                    username = payload.sub; // email
+                    userId = payload.sub; // use email as user ID
+                    userRole = payload.role || 'USER';
+                    
+                    // Show user info
+                    document.getElementById('userDisplayName').textContent = username;
+                    document.getElementById('userRole').textContent = userRole;
+                    document.getElementById('authSection').style.display = 'none';
+                    document.getElementById('userInfo').style.display = 'block';
+                    
+                    document.getElementById('status').className = 'status disconnected';
+                    document.getElementById('status').textContent = 'Authenticated! Click Connect to start chatting.';
+                    
+                } else {
+                    const errorData = await response.json();
+                    showError('Login failed: ' + (errorData.message || 'Invalid credentials'));
+                    document.getElementById('status').className = 'status disconnected';
+                    document.getElementById('status').textContent = 'Authentication failed';
+                }
+            } catch (error) {
+                showError('Login failed: ' + error.message);
+                document.getElementById('status').className = 'status disconnected';
+                document.getElementById('status').textContent = 'Authentication failed';
+            }
+        }
+
+        function logout() {
+            jwtToken = '';
+            username = '';
+            userId = '';
+            userRole = '';
+            isConnected = false;
+            
+            if (stompClient) {
+                stompClient.disconnect();
+                stompClient = null;
+            }
+            
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('messages').innerHTML = '';
+            
+            document.getElementById('status').className = 'status disconnected';
+            document.getElementById('status').textContent = 'Please login to start chatting';
+        }
+
+        function connect() {
+            if (!jwtToken) {
+                showError('Please login first');
+                return;
+            }
+            
+            if (isConnected) {
+                console.log('Already connected');
+                return;
+            }
+            
+            const socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            
+            // Add JWT token to connection headers
+            const headers = {
+                'Authorization': 'Bearer ' + jwtToken
+            };
+            
+            stompClient.connect(headers, function (frame) {
+                console.log('Connected: ' + frame);
+                isConnected = true;
+                document.getElementById('status').className = 'status connected';
+                document.getElementById('status').textContent = 'Connected';
+                
+                // Subscribe to public messages
+                stompClient.subscribe('/topic/public', function (message) {
+                    const receivedMessage = JSON.parse(message.body);
+                    // Don't show our own join message
+                    if (receivedMessage.type === 'JOIN' && receivedMessage.senderId === userId) {
+                        return;
+                    }
+                    showMessage(receivedMessage);
+                });
+                
+                // Subscribe to private messages
+                stompClient.subscribe('/user/queue/private', function (message) {
+                    showMessage(JSON.parse(message.body));
+                });
+                
+                // Send join message
+                stompClient.send("/app/chat.addUser", {}, JSON.stringify({
+                    senderId: userId,
+                    senderName: username,
+                    type: 'JOIN'
+                }));
+                
+            }, function (error) {
+                console.log('STOMP error: ' + error);
+                isConnected = false;
+                document.getElementById('status').className = 'status disconnected';
+                document.getElementById('status').textContent = 'Connection failed';
+                showError('Connection failed. Please try again.');
+            });
+        }
+
+        function disconnect() {
+            if (stompClient !== null && isConnected) {
+                // Send leave message before disconnecting
+                stompClient.send("/app/chat.sendMessage", {}, JSON.stringify({
+                    senderId: userId,
+                    senderName: username,
+                    type: 'LEAVE'
+                }));
+                
+                stompClient.disconnect();
+                isConnected = false;
+                document.getElementById('status').className = 'status disconnected';
+                document.getElementById('status').textContent = 'Disconnected';
+            }
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                return;
+            }
+            
+            if (!isConnected || !stompClient) {
+                showError('Please connect first');
+                return;
+            }
+            
+            const chatMessage = {
+                senderId: userId,
+                senderName: username,
+                content: message,
+                type: 'CHAT'
+            };
+            
+            // Send message to server (don't show it immediately)
+            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+            messageInput.value = '';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function showMessage(message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            
+            if (message.type === 'JOIN') {
+                messageElement.className += ' system';
+                messageElement.textContent = message.senderName + ' joined the chat';
+            } else if (message.type === 'LEAVE') {
+                messageElement.className += ' system';
+                messageElement.textContent = message.senderName + ' left the chat';
+            } else {
+                // Check if this message is from the current user
+                if (message.senderId === userId) {
+                    messageElement.className += ' sent';
+                } else {
+                    messageElement.className += ' received';
+                }
+                messageElement.innerHTML = '<strong>' + message.senderName + ':</strong> ' + message.content;
+            }
+            
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Auto-login with default credentials for testing
+        window.onload = function() {
+            console.log('Chat interface loaded. You can login with test20@airops.com / test123');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Eureka Client Configuration
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka
+  instance:
+    hostname: reporting-service
+    prefer-ip-address: true
+
+server:
+  port: 8085
+
+logging:
+  level:
+    com.example.reporting_service: DEBUG

@@ -1,0 +1,7 @@
+com\example\flight_service\dto\FlightRequest.class
+com\example\flight_service\entity\Flight.class
+com\example\flight_service\dto\FlightStatusRequest.class
+com\example\flight_service\dto\FlightResponse.class
+com\example\flight_service\dto\UserResponse.class
+com\example\flight_service\repository\FlightRepository.class
+com\example\flight_service\entity\FlightStatus.class

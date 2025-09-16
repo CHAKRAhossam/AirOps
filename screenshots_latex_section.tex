@@ -1,0 +1,400 @@
+% Section pour intégrer toutes les captures d'écran dans le rapport AirOps
+
+\section{Captures d'Écran et Démonstrations}
+
+Cette section présente les interfaces et fonctionnalités réalisées de la solution AirOps à travers des captures d'écran détaillées de l'application en fonctionnement.
+
+\subsection{Interface Utilisateur Frontend}
+
+\subsubsection{Authentification et Sécurité}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/01-frontend/login.png}
+    \caption{Page de connexion AirOps avec authentification JWT}
+    \label{fig:airops-login}
+\end{figure}
+
+La page de connexion présente une interface moderne et sécurisée utilisant l'authentification JWT. Les utilisateurs peuvent se connecter avec leurs identifiants pour accéder aux fonctionnalités selon leur rôle (ADMIN, SUPERVISEUR, AGENT).
+
+\subsubsection{Tableau de Bord Principal}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/01-frontend/dashboard.png}
+    \caption{Tableau de bord principal avec métriques temps réel}
+    \label{fig:airops-dashboard}
+\end{figure}
+
+Le tableau de bord offre une vue d'ensemble complète des opérations avec :
+\begin{itemize}
+    \item Statistiques des vols en temps réel
+    \item Indicateurs de performance du personnel
+    \item Notifications et alertes système
+    \item Accès rapide aux fonctionnalités principales
+\end{itemize}
+
+\subsubsection{Gestion des Vols}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/01-frontend/flights-list.png}
+    \caption{Interface de gestion des vols avec filtres et recherche}
+    \label{fig:airops-flights-list}
+\end{figure}
+
+L'interface de gestion des vols permet :
+\begin{itemize}
+    \item Visualisation complète des vols planifiés
+    \item Filtrage par statut, date, origine et destination
+    \item Mise à jour temps réel des statuts de vol
+    \item Pagination pour la gestion de volumes importants
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/01-frontend/flight-form.png}
+    \caption{Formulaire de création/modification de vol}
+    \label{fig:airops-flight-form}
+\end{figure}
+
+Le formulaire de gestion des vols intègre :
+\begin{itemize}
+    \item Validation en temps réel des données saisies
+    \item Sélecteurs d'aéroports avec autocomplétion
+    \item Gestion des horaires avec validation de cohérence
+    \item Interface responsive adaptée aux différents appareils
+\end{itemize}
+
+\subsubsection{Gestion du Personnel}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/01-frontend/staff-management.png}
+    \caption{Interface de gestion du personnel avec profils complets}
+    \label{fig:airops-staff-management}
+\end{figure}
+
+Le module RH offre une gestion complète du personnel avec :
+\begin{itemize}
+    \item Profils détaillés avec photos et qualifications
+    \item Filtrage par département, rôle et statut
+    \item Gestion des plannings et horaires de travail
+    \item Système d'évaluation de performance intégré
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/01-frontend/staff-profile.png}
+    \caption{Profil détaillé d'un membre du personnel}
+    \label{fig:airops-staff-profile}
+\end{figure}
+
+\subsubsection{Communication Temps Réel}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/01-frontend/chat-interface.png}
+    \caption{Interface de communication temps réel avec WebSocket}
+    \label{fig:airops-chat-interface}
+\end{figure}
+
+La plateforme de communication intègre :
+\begin{itemize}
+    \item Chat public pour communications générales
+    \item Messages privés entre utilisateurs
+    \item Salles de discussion thématiques
+    \item Notifications push en temps réel
+    \item Historique des conversations avec recherche
+\end{itemize}
+
+\subsubsection{Interface Responsive}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{screenshots/01-frontend/mobile-dashboard.png}
+    \caption{Version mobile du tableau de bord}
+    \label{fig:airops-mobile}
+\end{figure}
+
+L'interface s'adapte automatiquement aux différentes tailles d'écran, garantissant une expérience utilisateur optimale sur tous les appareils.
+
+\subsection{Architecture Backend et Services}
+
+\subsubsection{Service Discovery - Eureka}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/02-backend/eureka-dashboard.png}
+    \caption{Dashboard Eureka avec services enregistrés}
+    \label{fig:eureka-dashboard}
+\end{figure}
+
+Le registre de services Eureka affiche tous les microservices actifs avec leur état de santé et leurs instances disponibles.
+
+\subsubsection{API Gateway}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/02-backend/api-gateway-routes.png}
+    \caption{Configuration des routes API Gateway}
+    \label{fig:api-gateway-routes}
+\end{figure}
+
+\subsubsection{Health Checks et Monitoring}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/02-backend/actuator-health.png}
+    \caption{Endpoints Spring Boot Actuator pour monitoring}
+    \label{fig:actuator-health}
+\end{figure}
+
+Les endpoints Actuator fournissent des informations détaillées sur l'état de santé et les métriques de chaque service.
+
+\subsection{Containerisation Docker}
+
+\subsubsection{Containers en Fonctionnement}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/03-docker/containers-running.png}
+    \caption{Containers Docker actifs avec docker-compose}
+    \label{fig:docker-containers}
+\end{figure}
+
+L'architecture containerisée montre tous les services en fonctionnement :
+\begin{itemize}
+    \item 8 microservices Spring Boot
+    \item 3 instances PostgreSQL (Auth, Flight, Staff)
+    \item 1 instance MongoDB (Chat)
+    \item Frontend Next.js
+    \item Services d'infrastructure (Eureka, Gateway, Config)
+\end{itemize}
+
+\subsubsection{Images Docker}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/03-docker/docker-images.png}
+    \caption{Images Docker construites pour les services AirOps}
+    \label{fig:docker-images}
+\end{figure}
+
+\subsubsection{Monitoring des Ressources}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/03-docker/docker-stats.png}
+    \caption{Utilisation des ressources par les containers}
+    \label{fig:docker-stats}
+\end{figure}
+
+\subsection{Bases de Données}
+
+\subsubsection{PostgreSQL - Données Relationnelles}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/04-databases/postgresql-auth-tables.png}
+    \caption{Structure de la base de données d'authentification}
+    \label{fig:postgresql-auth}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/04-databases/postgresql-flight-data.png}
+    \caption{Données des vols dans PostgreSQL}
+    \label{fig:postgresql-flights}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/04-databases/postgresql-staff-data.png}
+    \caption{Données du personnel dans PostgreSQL}
+    \label{fig:postgresql-staff}
+\end{figure}
+
+\subsubsection{MongoDB - Données NoSQL}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/04-databases/mongodb-collections.png}
+    \caption{Collections MongoDB pour le service de chat}
+    \label{fig:mongodb-collections}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/04-databases/mongodb-messages.png}
+    \caption{Documents de messages dans MongoDB}
+    \label{fig:mongodb-messages}
+\end{figure}
+
+\subsection{Environnement de Développement}
+
+\subsubsection{Structure du Projet}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/05-development/ide-project-structure.png}
+    \caption{Structure complète du projet dans l'IDE}
+    \label{fig:project-structure}
+\end{figure}
+
+\subsubsection{Code Source Backend}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/05-development/auth-controller-code.png}
+    \caption{Exemple de code - AuthController Spring Boot}
+    \label{fig:auth-controller-code}
+\end{figure}
+
+\subsubsection{Code Source Frontend}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/05-development/react-component-code.png}
+    \caption{Exemple de code - Composant React TypeScript}
+    \label{fig:react-component-code}
+\end{figure}
+
+\subsubsection{Tests API avec Postman}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/05-development/postman-tests.png}
+    \caption{Collection de tests API Postman}
+    \label{fig:postman-tests}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/05-development/postman-auth-test.png}
+    \caption{Test d'authentification JWT dans Postman}
+    \label{fig:postman-auth-test}
+\end{figure}
+
+\subsection{GitHub et Gestion de Version}
+
+\subsubsection{Repository GitHub}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/06-github/repository-overview.png}
+    \caption{Vue d'ensemble du repository GitHub AirOps}
+    \label{fig:github-repository}
+\end{figure}
+
+\subsubsection{Structure du Code}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/06-github/code-structure.png}
+    \caption{Organisation du code source sur GitHub}
+    \label{fig:github-code-structure}
+\end{figure}
+
+\subsubsection{Historique des Commits}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/06-github/commits-history.png}
+    \caption{Historique des commits et contributions}
+    \label{fig:github-commits}
+\end{figure}
+
+\subsection{CI/CD avec GitHub Actions}
+
+\subsubsection{Workflows Configurés}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/07-cicd/github-actions-workflows.png}
+    \caption{Workflows GitHub Actions pour CI/CD}
+    \label{fig:github-actions-workflows}
+\end{figure}
+
+\subsubsection{Pipeline Backend}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/07-cicd/backend-pipeline.png}
+    \caption{Pipeline de build pour les services backend}
+    \label{fig:backend-pipeline}
+\end{figure}
+
+\subsubsection{Pipeline Frontend}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/07-cicd/frontend-pipeline.png}
+    \caption{Pipeline de build pour le frontend React}
+    \label{fig:frontend-pipeline}
+\end{figure}
+
+\subsubsection{Logs de Déploiement}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/07-cicd/deployment-logs.png}
+    \caption{Logs détaillés du processus de déploiement}
+    \label{fig:deployment-logs}
+\end{figure}
+
+\subsection{Tests et Validation}
+
+\subsubsection{Tests d'Intégration}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/08-testing/integration-tests.png}
+    \caption{Résultats des tests d'intégration automatisés}
+    \label{fig:integration-tests}
+\end{figure}
+
+\subsubsection{Coverage des Tests}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/08-testing/test-coverage.png}
+    \caption{Couverture de code par les tests unitaires}
+    \label{fig:test-coverage}
+\end{figure}
+
+\subsection{Métriques et Performance}
+
+\subsubsection{Monitoring des Services}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/09-monitoring/service-metrics.png}
+    \caption{Métriques de performance des microservices}
+    \label{fig:service-metrics}
+\end{figure}
+
+\subsubsection{Utilisation des Ressources}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{screenshots/09-monitoring/resource-usage.png}
+    \caption{Utilisation CPU et mémoire en temps réel}
+    \label{fig:resource-usage}
+\end{figure}
+
+\subsection{Conclusion des Démonstrations}
+
+Ces captures d'écran démontrent la réalisation complète et fonctionnelle de la solution AirOps. L'application offre :
+
+\begin{itemize}
+    \item \textbf{Interface utilisateur moderne} : Design responsive avec UX optimisée
+    \item \textbf{Architecture robuste} : Microservices scalables et maintenables
+    \item \textbf{Sécurité renforcée} : Authentification JWT et contrôle d'accès granulaire
+    \item \textbf{Communication temps réel} : WebSocket pour interactions instantanées
+    \item \textbf{Persistance polyglotte} : PostgreSQL et MongoDB selon les besoins
+    \item \textbf{DevOps moderne} : CI/CD automatisé avec containerisation Docker
+    \item \textbf{Monitoring complet} : Surveillance et métriques en temps réel
+\end{itemize}
+
+La solution développée répond parfaitement aux exigences fonctionnelles et techniques définies pour la gestion des opérations aéronautiques de l'ONDA, démontrant la viabilité et la qualité de l'architecture microservices mise en place.
