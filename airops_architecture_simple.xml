@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram name="AirOps Simple Architecture" id="airops-simple">
+    <mxGraphModel dx="1422" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Title -->
+        <mxCell id="title" value="AirOps - Architecture Microservices Spring Boot" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#2c3e50;" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- User -->
+        <mxCell id="user" value="Utilisateurs ONDA&#xa;(Agents, Superviseurs, Admins)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3498db;strokeColor=#2980b9;fontSize=12;fontStyle=1;fontColor=white;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="150" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Frontend -->
+        <mxCell id="frontend" value="Next.js 15 Frontend&#xa;Port 3000&#xa;TypeScript + Shadcn/ui" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4caf50;strokeColor=#388e3c;fontSize=11;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="100" width="160" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Gateway -->
+        <mxCell id="gateway" value="Spring Cloud Gateway&#xa;API Gateway&#xa;Port 8222" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff9800;strokeColor=#f57c00;fontSize=11;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="100" width="160" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Infrastructure -->
+        <mxCell id="config-server" value="Config Server&#xa;Port 8888&#xa;Spring Cloud Config" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e91e63;strokeColor=#c2185b;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="200" width="120" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="discovery" value="Eureka Server&#xa;Port 8761&#xa;Service Discovery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e91e63;strokeColor=#c2185b;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="200" width="120" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="docker" value="Docker Compose&#xa;Container Orchestration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#607d8b;strokeColor=#455a64;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="200" width="120" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Microservices -->
+        <mxCell id="auth-service" value="Auth Service&#xa;Port 8090&#xa;Spring Boot + Security&#xa;JWT + Users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2196f3;strokeColor=#1976d2;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="320" width="120" height="70" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="flight-service" value="Flight Service&#xa;Port 8084&#xa;Spring Boot + JPA&#xa;Flight Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2196f3;strokeColor=#1976d2;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="320" width="120" height="70" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="staff-service" value="Staff Service&#xa;Port 8083&#xa;Spring Boot + JPA&#xa;HR Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2196f3;strokeColor=#1976d2;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="320" width="120" height="70" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="chat-service" value="Chat Service&#xa;Port 8086&#xa;Spring Boot + WebSocket&#xa;Real-time Communication" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2196f3;strokeColor=#1976d2;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="320" width="120" height="70" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="reporting-service" value="Reporting Service&#xa;Port 8085&#xa;Spring Boot + Analytics&#xa;Data Aggregation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2196f3;strokeColor=#1976d2;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="320" width="120" height="70" as="geometry"/>
+        </mxCell>
+        
+        <!-- Databases -->
+        <mxCell id="auth-db" value="PostgreSQL&#xa;auth_db&#xa;Port 5432" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#9c27b0;strokeColor=#7b1fa2;fontSize=9;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="450" width="80" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="flight-db" value="PostgreSQL&#xa;flights_db&#xa;Port 5434" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#9c27b0;strokeColor=#7b1fa2;fontSize=9;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="450" width="80" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="staff-db" value="PostgreSQL&#xa;staff_db&#xa;Port 5433" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#9c27b0;strokeColor=#7b1fa2;fontSize=9;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="450" width="80" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="mongo-db" value="MongoDB&#xa;chat_db&#xa;Port 27017" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#4caf50;strokeColor=#388e3c;fontSize=9;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="450" width="80" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- External Systems -->
+        <mxCell id="onda-systems" value="Systemes ONDA&#xa;Legacy Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f44336;strokeColor=#d32f2f;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="950" y="320" width="120" height="50" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="monitoring" value="Monitoring&#xa;Logs + Metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff5722;strokeColor=#d84315;fontSize=10;fontColor=white;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="950" y="380" width="120" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- Connections -->
+        <mxCell id="user-frontend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#3498db;" edge="1" parent="1" source="user" target="frontend">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="frontend-gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#ff9800;" edge="1" parent="1" source="frontend" target="gateway">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- Gateway to Services -->
+        <mxCell id="gateway-auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#2196f3;" edge="1" parent="1" source="gateway" target="auth-service">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="gateway-flight" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#2196f3;" edge="1" parent="1" source="gateway" target="flight-service">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="gateway-staff" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#2196f3;" edge="1" parent="1" source="gateway" target="staff-service">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="gateway-chat" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#2196f3;" edge="1" parent="1" source="gateway" target="chat-service">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="gateway-reporting" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#2196f3;" edge="1" parent="1" source="gateway" target="reporting-service">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- Services to Databases -->
+        <mxCell id="auth-to-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#9c27b0;" edge="1" parent="1" source="auth-service" target="auth-db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="flight-to-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#9c27b0;" edge="1" parent="1" source="flight-service" target="flight-db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="staff-to-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#9c27b0;" edge="1" parent="1" source="staff-service" target="staff-db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="chat-to-mongo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#4caf50;" edge="1" parent="1" source="chat-service" target="mongo-db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- External connections -->
+        <mxCell id="reporting-external" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#f44336;" edge="1" parent="1" source="reporting-service" target="onda-systems">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend" value="Stack Technologique:&#xa;&#xa;• Spring Boot (Microservices)&#xa;• Spring Cloud (Infrastructure)&#xa;• Next.js + TypeScript (Frontend)&#xa;• PostgreSQL (Relational DB)&#xa;• MongoDB (NoSQL DB)&#xa;• Docker Compose (Containers)&#xa;• JWT (Authentication)&#xa;• WebSocket + STOMP (Real-time)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="50" y="250" width="200" height="200" as="geometry"/>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+

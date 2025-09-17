@@ -1,0 +1,75 @@
+@startuml AirOps Canva Layout
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+skinparam defaultFontSize 12
+
+title **AirOps - Architecture pour Canva**
+
+' Layout optimized for Canva recreation
+left to right direction
+
+' External User
+actor "👥 Utilisateurs ONDA" as Users
+
+' Frontend
+rectangle "⚛️ Next.js Frontend\nPort 3000\nTypeScript" as Frontend #4CAF50
+
+' API Gateway
+rectangle "🚪 API Gateway\nPort 8222\nSpring Cloud" as Gateway #FF9800
+
+' Microservices Row
+rectangle "🔐 Auth Service\nPort 8090\nJWT + Security" as Auth #2196F3
+rectangle "✈️ Flight Service\nPort 8084\nFlight Management" as Flight #2196F3
+rectangle "👥 Staff Service\nPort 8083\nHR Management" as Staff #2196F3
+rectangle "💬 Chat Service\nPort 8086\nWebSocket" as Chat #2196F3
+rectangle "📊 Reporting Service\nPort 8085\nAnalytics" as Reporting #2196F3
+
+' Databases Row
+database "🐘 PostgreSQL\nauth_db\n5432" as AuthDB #9C27B0
+database "🐘 PostgreSQL\nflights_db\n5434" as FlightDB #9C27B0
+database "🐘 PostgreSQL\nstaff_db\n5433" as StaffDB #9C27B0
+database "🍃 MongoDB\nchat_db\n27017" as ChatDB #4CAF50
+
+' Infrastructure Row
+rectangle "⚙️ Config Server\nPort 8888" as Config #E91E63
+rectangle "🔍 Eureka Server\nPort 8761" as Eureka #E91E63
+rectangle "🐳 Docker Compose\nOrchestration" as Docker #0DB7ED
+rectangle "📊 Zipkin Tracing\nMonitoring" as Zipkin #FF9800
+
+' External
+rectangle "🏢 ONDA Systems\nLegacy Integration" as ONDA #F44336
+
+' Main Flow
+Users --> Frontend
+Frontend --> Gateway
+Gateway --> Auth
+Gateway --> Flight
+Gateway --> Staff
+Gateway --> Chat
+Gateway --> Reporting
+
+' Database Connections
+Auth --> AuthDB
+Flight --> FlightDB
+Staff --> StaffDB
+Chat --> ChatDB
+
+' Infrastructure (dotted lines)
+Auth -.-> Config : config
+Flight -.-> Config : config
+Staff -.-> Config : config
+Chat -.-> Config : config
+Reporting -.-> Config : config
+
+Auth -.-> Eureka : register
+Flight -.-> Eureka : register
+Staff -.-> Eureka : register
+Chat -.-> Eureka : register
+Reporting -.-> Eureka : register
+
+' External
+Reporting --> ONDA
+
+@enduml
+

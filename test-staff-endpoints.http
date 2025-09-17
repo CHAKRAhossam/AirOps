@@ -1,0 +1,84 @@
+### Staff Service API Testing
+### Base URL: http://localhost:8222/api/v1/staff
+
+### 1. Get All Staff (Paginated)
+GET http://localhost:8222/api/v1/staff?page=0&size=20
+Content-Type: application/json
+
+### 2. Get Staff by ID
+GET http://localhost:8222/api/v1/staff/1
+Content-Type: application/json
+
+### 3. Create New Staff Member
+POST http://localhost:8222/api/v1/staff
+Content-Type: application/json
+
+{
+  "employeeId": "EMP001",
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "john.smith@airline.com",
+  "staffRole": "PILOT",
+  "department": "FLIGHT_OPERATIONS",
+  "hireDate": "2020-03-15",
+  "status": "ACTIVE"
+}
+
+### 4. Update Staff Member
+PUT http://localhost:8222/api/v1/staff/1
+Content-Type: application/json
+
+{
+  "employeeId": "EMP001",
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "john.smith@airline.com",
+  "staffRole": "PILOT",
+  "department": "FLIGHT_OPERATIONS",
+  "hireDate": "2020-03-15",
+  "status": "ON_LEAVE"
+}
+
+### 5. Delete Staff Member
+DELETE http://localhost:8222/api/v1/staff/1
+Content-Type: application/json
+
+### 6. Get Staff by Role
+GET http://localhost:8222/api/v1/staff/role/PILOT
+Content-Type: application/json
+
+### 7. Get Staff by Status
+GET http://localhost:8222/api/v1/staff/status/ACTIVE
+Content-Type: application/json
+
+### 8. Get Staff by Hire Date Range
+GET http://localhost:8222/api/v1/staff/hire-date?startDate=2020-01-01&endDate=2023-12-31
+Content-Type: application/json
+
+### 9. Get All Available Roles
+GET http://localhost:8222/api/v1/staff/roles
+Content-Type: application/json
+
+### 10. Get All Available Statuses
+GET http://localhost:8222/api/v1/staff/statuses
+Content-Type: application/json
+
+### 11. Get All Available Departments
+GET http://localhost:8222/api/v1/staff/departments
+Content-Type: application/json
+
+### 12. Test Health Check
+GET http://localhost:8222/api/v1/test/health
+Content-Type: application/json
+
+### 13. Test Info Endpoint
+GET http://localhost:8222/api/v1/test/info
+Content-Type: application/json
+
+### Notes:
+### - All endpoints go through the Gateway (port 8222)
+### - The Gateway routes /api/v1/staff/** to the staff-service
+### - Staff service runs on port 8083 internally
+### - Database: PostgreSQL (airops_staff database)
+### - Service Discovery: Eureka (port 8761)
+### - Configuration: Config Server (port 8888)

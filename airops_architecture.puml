@@ -1,0 +1,133 @@
+@startuml AirOps Architecture
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+skinparam linetype polyline
+
+title **AirOps - Architecture Microservices Complète**
+
+' External User
+actor "Utilisateurs ONDA" as Users #3498db
+
+' Frontend Layer
+package "Frontend Layer" #e8f5e9 {
+    component "Next.js 15\nFrontend\nPort 3000\nTypeScript + Shadcn/ui" as Frontend #4caf50
+}
+
+' API Gateway Layer
+package "Gateway Layer" #fff3e0 {
+    component "API Gateway\nSpring Cloud Gateway\nPort 8222\nRouting + Security" as Gateway #ff9800
+}
+
+' Infrastructure Layer
+package "Infrastructure Layer" #fce4ec {
+    component "Config Server\nPort 8888\nSpring Cloud Config\nCentralized Configuration" as ConfigServer #e91e63
+    component "Eureka Server\nPort 8761\nService Discovery\nService Registry" as EurekaServer #e91e63
+    component "Docker Compose\nContainer Orchestration\nHealth Checks" as Docker #607d8b
+}
+
+' Business Services Layer
+package "Business Services Layer" #e3f2fd {
+    component "Auth Service\nPort 8090\nSpring Boot + Security\nJWT Authentication" as AuthService #2196f3
+    component "Flight Service\nPort 8084\nSpring Boot + JPA\nFlight Management" as FlightService #2196f3
+    component "Staff Service\nPort 8083\nSpring Boot + JPA\nHR Management" as StaffService #2196f3
+    component "Chat Service\nPort 8086\nSpring Boot + WebSocket\nReal-time Communication" as ChatService #2196f3
+    component "Reporting Service\nPort 8085\nSpring Boot + Analytics\nData Aggregation" as ReportingService #2196f3
+}
+
+' Database Layer
+package "Database Layer - Polyglot Persistence" #f3e5f5 {
+    database "PostgreSQL\nauth_db\nPort 5432\nUsers + Tokens" as AuthDB #9c27b0
+    database "PostgreSQL\nairops_flights\nPort 5434\nFlight Data" as FlightDB #9c27b0
+    database "PostgreSQL\nairops_staff\nPort 5433\nStaff + Schedules" as StaffDB #9c27b0
+    database "MongoDB\nairops_chat\nPort 27017\nMessages + Rooms" as ChatMongo #4caf50
+}
+
+' External Systems
+package "External Systems" #ffebee {
+    component "ONDA Systems\nLegacy Integration\nData Exchange" as ONDASystems #f44336
+    component "Zipkin\nDistributed Tracing\nRequest Monitoring" as Zipkin #ff9800
+}
+
+' Main Request Flow
+Users --> Frontend : HTTP/HTTPS
+Frontend --> Gateway : REST API
+Gateway --> AuthService : /api/v1/auth/**
+Gateway --> FlightService : /api/v1/flights/**
+Gateway --> StaffService : /api/v1/staff/**
+Gateway --> ChatService : /api/v1/chat/** + /ws/**
+Gateway --> ReportingService : /api/v1/reports/**
+
+' Service to Database Connections
+AuthService --> AuthDB : JPA/Hibernate
+FlightService --> FlightDB : JPA/Hibernate
+StaffService --> StaffDB : JPA/Hibernate
+ChatService --> ChatMongo : Spring Data MongoDB
+
+' Infrastructure Connections
+AuthService ..> EurekaServer : Register Service
+FlightService ..> EurekaServer : Register Service
+StaffService ..> EurekaServer : Register Service
+ChatService ..> EurekaServer : Register Service
+ReportingService ..> EurekaServer : Register Service
+Gateway ..> EurekaServer : Service Discovery
+
+AuthService ..> ConfigServer : Pull Configuration
+FlightService ..> ConfigServer : Pull Configuration
+StaffService ..> ConfigServer : Pull Configuration
+ChatService ..> ConfigServer : Pull Configuration
+ReportingService ..> ConfigServer : Pull Configuration
+Gateway ..> ConfigServer : Pull Configuration
+
+' Inter-Service Communication
+FlightService ..> AuthService : JWT Validation
+StaffService ..> AuthService : JWT Validation
+ChatService ..> AuthService : JWT Validation
+ReportingService ..> AuthService : JWT Validation
+
+ReportingService ..> FlightService : Data Aggregation
+ReportingService ..> StaffService : Data Aggregation
+
+' External Connections
+ReportingService --> ONDASystems : Legacy Integration
+
+' Monitoring
+Gateway ..> Zipkin : Distributed Tracing
+AuthService ..> Zipkin : Request Tracing
+FlightService ..> Zipkin : Request Tracing
+StaffService ..> Zipkin : Request Tracing
+ChatService ..> Zipkin : Request Tracing
+ReportingService ..> Zipkin : Request Tracing
+
+' Docker Orchestration
+Docker ..> ConfigServer : Container Management
+Docker ..> EurekaServer : Container Management
+Docker ..> Gateway : Container Management
+Docker ..> AuthService : Container Management
+Docker ..> FlightService : Container Management
+Docker ..> StaffService : Container Management
+Docker ..> ChatService : Container Management
+Docker ..> ReportingService : Container Management
+
+' Legend
+note right of Users
+**Technologies Stack:**
+• Spring Boot (Microservices)
+• Spring Cloud (Infrastructure)
+• Next.js + TypeScript (Frontend)
+• PostgreSQL (Relational Data)
+• MongoDB (NoSQL Data)
+• Docker Compose (Containers)
+• JWT (Authentication)
+• WebSocket + STOMP (Real-time)
+
+**Communication Patterns:**
+• HTTP/REST (Synchronous)
+• WebSocket (Real-time)
+• Service Discovery (Eureka)
+• Circuit Breaker (Resilience)
+• Distributed Tracing (Zipkin)
+end note
+
+@enduml
+

@@ -1,0 +1,47 @@
+### Test Authentication Endpoints
+
+# Test Registration
+POST http://localhost:8222/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@test.com",
+  "password": "password123",
+  "role": "AGENT"
+}
+
+###
+
+# Test Login
+POST http://localhost:8222/api/v1/auth/authenticate
+Content-Type: application/json
+
+{
+  "email": "john.doe@test.com",
+  "password": "password123"
+}
+
+###
+
+# Test Token Validation (replace TOKEN_HERE with actual token from login)
+POST http://localhost:8222/api/v1/auth/validate
+Authorization: Bearer TOKEN_HERE
+
+###
+
+# Test Get Current User (replace TOKEN_HERE with actual token from login)
+GET http://localhost:8222/api/v1/auth/me
+Authorization: Bearer TOKEN_HERE
+
+###
+
+# Test Get All Roles
+GET http://localhost:8222/api/v1/auth/roles
+
+###
+
+# Test Logout (replace TOKEN_HERE with actual token from login)
+POST http://localhost:8222/api/v1/auth/logout
+Authorization: Bearer TOKEN_HERE

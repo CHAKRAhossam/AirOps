@@ -1,0 +1,36 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: chat-service
+
+  data:
+    mongodb:
+      host: chat-mongo
+      port: 27017
+      database: airops_chat
+      authentication-database: admin
+      username: ${MONGO_USERNAME:admin}
+      password: ${MONGO_PASSWORD:admin123}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: chat-service
+    prefer-ip-address: true
+
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL:http://auth-service:8090}
+
+logging:
+  level:
+    com.example.chat_service: DEBUG
+    org.springframework.messaging: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.socket: DEBUG
